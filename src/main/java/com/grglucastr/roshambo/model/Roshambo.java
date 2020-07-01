@@ -3,11 +3,11 @@ import java.util.*;
 
 public class Roshambo extends Game {
 
-    private static final int MINIMUM_PLAYERS_NUMBER = 2;
+    public static final int MINIMUM_PLAYERS_NUMBER = 2;
 
     private Set<Move> moves;
     private Set<Player> outs;
-    private HashMap<Player, Player> beats;
+    private HashMap<Player, List<Player>> beats;
 
     public Roshambo(Integer sessionId, Set<Player> players, Set<Move> moves) {
         super(sessionId, players);
@@ -25,10 +25,24 @@ public class Roshambo extends Game {
 
     @Override
     public void runGameRule() {
+        // Its a draw
+        if(playersHaveSameStrategy()){
+            outs.addAll(players);
+            return;
+        }
+
         moves.forEach(move -> {
             moves.forEach(move2 -> {
                 if(move.getStrategy().beats(move2.getStrategy())){
-                    beats.put(move.getPlayer(), move2.getPlayer());
+                    List<Player> playersBeaten = new ArrayList<>();
+
+                    if(beats.containsKey(move.getPlayer())){
+                        playersBeaten = beats.get(move.getPlayer());
+                    }
+
+                    playersBeaten.add(move2.getPlayer());
+                    beats.put(move.getPlayer(), playersBeaten);
+
                     outs.add(move2.getPlayer());
                 }
             });
@@ -37,7 +51,6 @@ public class Roshambo extends Game {
 
     @Override
     public void finish() {
-
         if(outs.size() == getPlayers().size()){
             setGameResult(GameResult.DRAW);
             return;
@@ -53,7 +66,6 @@ public class Roshambo extends Game {
         if(getWinner() != null){
             setGameResult(GameResult.WINNER);
         }
-
     }
 
     @Override
@@ -70,15 +82,26 @@ public class Roshambo extends Game {
         moves.forEach(move -> {
             lst.add(move.getPlayer());
         });
-        return lst.size() == MINIMUM_PLAYERS_NUMBER;
+        return lst.size() == getPlayers().size();
+    }
+
+    public boolean playersHaveSameStrategy(){
+        Set<Strategy> strategies = new HashSet<>();
+        moves.forEach(move -> {
+            strategies.add(move.getStrategy());
+        });
+        return strategies.size() == 1;
     }
 
     public Set<Player> getOuts() {
         return outs;
     }
 
-    public HashMap<Player, Player> getBeats() {
+    public HashMap<Player, List<Player>> getBeats() {
         return beats;
     }
 
+    public Set<Move> getMoves() {
+        return moves;
+    }
 }
