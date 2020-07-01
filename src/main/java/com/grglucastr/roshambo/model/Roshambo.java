@@ -1,12 +1,10 @@
 package com.grglucastr.roshambo.model;
-
-
-import java.io.Serializable;
 import java.util.*;
 
 public class Roshambo extends Game {
 
     private static final int MINIMUM_PLAYERS_NUMBER = 2;
+
     private Set<Move> moves;
     private Set<Player> outs;
     private HashMap<Player, Player> beats;
@@ -14,6 +12,8 @@ public class Roshambo extends Game {
     public Roshambo(Integer sessionId, Set<Player> players, Set<Move> moves) {
         super(sessionId, players);
         this.moves = moves;
+        outs = new HashSet<>();
+        beats = new HashMap<>();
     }
 
     @Override
@@ -25,21 +25,34 @@ public class Roshambo extends Game {
 
     @Override
     public void runGameRule() {
-        if(playersHaveSameStrategy()){
-            setGameResult(GameResult.DRAW);
-            return;
-        }
-
         moves.forEach(move -> {
             moves.forEach(move2 -> {
-
+                if(move.getStrategy().beats(move2.getStrategy())){
+                    beats.put(move.getPlayer(), move2.getPlayer());
+                    outs.add(move2.getPlayer());
+                }
             });
         });
-
     }
 
     @Override
     public void finish() {
+
+        if(outs.size() == getPlayers().size()){
+            setGameResult(GameResult.DRAW);
+            return;
+        }
+
+        for(Player player : getPlayers()){
+            if(!outs.contains(player)){
+                setWinner(player);
+                break;
+            }
+        }
+
+        if(getWinner() != null){
+            setGameResult(GameResult.WINNER);
+        }
 
     }
 
@@ -60,11 +73,12 @@ public class Roshambo extends Game {
         return lst.size() == MINIMUM_PLAYERS_NUMBER;
     }
 
-    public boolean playersHaveSameStrategy() {
-        Set<Strategy> differentStrategies = new HashSet<>();
-        moves.forEach(move -> {
-            differentStrategies.add(move.getStrategy());
-        });
-        return differentStrategies.size() == 1;
+    public Set<Player> getOuts() {
+        return outs;
     }
+
+    public HashMap<Player, Player> getBeats() {
+        return beats;
+    }
+
 }
