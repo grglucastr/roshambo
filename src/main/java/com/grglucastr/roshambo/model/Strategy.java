@@ -24,13 +24,12 @@ public class Strategy implements Serializable {
 
 
     public boolean beats(Strategy strategy){
-        for(Strategy strength : strengths){
-            if(strategy.getWeaknesses().contains(strength)){
-                return true;
-            }
+
+        if(this.equals(strategy)){
+            return false;
         }
-        
-        return false;
+
+        return strategy.getWeaknesses().contains(this);
     }
 
 
