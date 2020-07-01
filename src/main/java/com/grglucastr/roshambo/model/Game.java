@@ -25,13 +25,11 @@ public abstract class Game implements Serializable {
     public abstract boolean hasPlayers();
 
     public void start(){
-
-        preStart();
-
         if(!hasPlayers()){
             throw new RuntimeException("Unable to start. Game has not enough players.");
         }
 
+        preStart();
         gameStatus = GameStatus.IN_PROGRESS;
 
         runGameRule();
