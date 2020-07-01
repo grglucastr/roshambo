@@ -9,10 +9,8 @@ public class Move implements Serializable {
     private Player player;
     private Strategy strategy;
 
-    public Move() {
-    }
-
-    public Move(Player player, Strategy strategy) {
+    public Move(Integer id, Player player, Strategy strategy) {
+        this.id = id;
         this.player = player;
         this.strategy = strategy;
     }
@@ -46,11 +44,11 @@ public class Move implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Move move = (Move) o;
-        return id.equals(move.id);
+        return player.equals(move.player);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hash(player);
     }
 }

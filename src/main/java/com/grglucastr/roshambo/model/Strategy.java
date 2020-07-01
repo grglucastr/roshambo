@@ -1,8 +1,7 @@
 package com.grglucastr.roshambo.model;
 
 import java.io.Serializable;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 public class Strategy implements Serializable {
 
@@ -12,13 +11,30 @@ public class Strategy implements Serializable {
     private Set<Strategy> strengths;
 
     public Strategy() {
+        this.weaknesses = new HashSet<>();
+        this.strengths = new HashSet<>();
     }
 
-    public Strategy(String name, Set<Strategy> weaknesses, Set<Strategy> strengths) {
+    public Strategy(Integer id, String name) {
+        this.id = id;
         this.name = name;
-        this.weaknesses = weaknesses;
-        this.strengths = strengths;
+        this.weaknesses = new HashSet<>();
+        this.strengths = new HashSet<>();
     }
+
+
+    public boolean beats(Strategy strategy){
+        for(Strategy strength : strengths){
+            if(strategy.getWeaknesses().contains(strength)){
+                return true;
+            }
+        }
+        
+        return false;
+    }
+
+
+    // Getters and setterss
 
     public Integer getId() {
         return id;
@@ -44,12 +60,24 @@ public class Strategy implements Serializable {
         this.weaknesses = weaknesses;
     }
 
+    public void setWeaknesses(Strategy... weaknesses) {
+        for (int i = 0; i < weaknesses.length; i++) {
+            this.weaknesses.add(weaknesses[i]);
+        }
+    }
+
     public Set<Strategy> getStrengths() {
         return strengths;
     }
 
     public void setStrengths(Set<Strategy> strengths) {
         this.strengths = strengths;
+    }
+
+    public void setStrengths(Strategy... strengths) {
+        for (int i = 0; i < strengths.length; i++) {
+            this.strengths.add(strengths[i]);
+        }
     }
 
     @Override
