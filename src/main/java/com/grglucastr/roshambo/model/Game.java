@@ -6,9 +6,11 @@ import java.util.Set;
 
 public abstract class Game implements Serializable {
 
+    private GameStatus gameStatus;
+
     protected Integer sessionId;
     protected Set<Player> players;
-    protected GameStatus gameStatus;
+    protected Player winner;
     protected GameResult gameResult;
 
     public Game(Integer sessionId, Set<Player> players) {
@@ -59,8 +61,12 @@ public abstract class Game implements Serializable {
         return gameStatus;
     }
 
-    public void setGameStatus(GameStatus gameStatus) {
-        this.gameStatus = gameStatus;
+    public Player getWinner() {
+        return winner;
+    }
+
+    public void setWinner(Player winner) {
+        this.winner = winner;
     }
 
     // Equals and Hashcodes
