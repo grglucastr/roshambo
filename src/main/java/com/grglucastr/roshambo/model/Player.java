@@ -4,6 +4,10 @@ public class Player extends BaseObject {
 
     private String name;
 
+    public Player(Integer id){
+        super(id);
+    }
+
     public Player(Integer id, String name) {
         super(id);
         this.name = name;
