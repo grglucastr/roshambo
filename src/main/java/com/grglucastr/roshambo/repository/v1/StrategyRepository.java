@@ -14,6 +14,15 @@ public class StrategyRepository extends BaseRepository<Strategy> {
     @Override
     public Strategy add(Strategy obj) {
         Strategy newStrategy = new Strategy(getAvailableId(), obj.getName());
+
+        if(obj.getWeaknesses().size() > 0){
+            newStrategy.getWeaknesses().addAll(obj.getWeaknesses());
+        }
+
+        if(obj.getStrengths().size() > 0){
+            newStrategy.getStrengths().addAll(obj.getStrengths());
+        }
+
         strategies.add(newStrategy);
         return newStrategy;
     }
