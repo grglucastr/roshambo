@@ -125,6 +125,41 @@ public class StrategyController implements HTTPRequestable<Strategy>  {
         return ResponseEntity.ok(updateObj.getWeaknesses().stream().collect(Collectors.toList()));
     }
 
+    @PostMapping(value = "/{id}/strengths", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<Strategy>> addStrengths(@PathVariable("id") Integer id, @RequestBody Set<Strategy> strategies) {
+        Optional<Strategy> found = strategyRepository.findById(id);
+        if(found.isEmpty()){
+            return ResponseEntity.notFound().build();
+        }
+
+        Strategy updateObj = found.get();
+        handleStrengthsAndWeaknesses(strategies, updateObj.getStrengths());
+
+        strategyRepository.update(updateObj);
+        return ResponseEntity.ok(updateObj.getStrengths().stream().collect(Collectors.toList()));
+    }
+
+    @DeleteMapping(value = "/{id}/strengths/{strengthId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<Strategy>> removeStrength(@PathVariable("id") Integer id, @PathVariable("strengthId") Integer strengthId) {
+        Optional<Strategy> found = strategyRepository.findById(id);
+        if(found.isEmpty()){
+            return ResponseEntity.notFound().build();
+        }
+
+        Strategy updateObj = found.get();
+        Set<Strategy> strengths = updateObj
+                .getStrengths()
+                .stream()
+                .filter(strategy -> strategy.getId() != strengthId)
+                .collect(Collectors.toSet());
+
+        updateObj.getStrengths().clear();
+        updateObj.getStrengths().addAll(strengths);
+
+        strategyRepository.update(updateObj);
+        return ResponseEntity.ok(updateObj.getStrengths().stream().collect(Collectors.toList()));
+    }
+
     private void handleStrengthsAndWeaknesses(Set<Strategy> sourceStrategies, Set<Strategy> destinationStrategies) {
         sourceStrategies.forEach(strategy -> {
             if(strategy.getName() == null || strategy.getName().isEmpty() || strategy.getName().isBlank()){
