@@ -34,16 +34,8 @@ public class Roshambo extends Game {
         moves.forEach(move -> {
             moves.forEach(move2 -> {
                 if(move.getStrategy().beats(move2.getStrategy())){
-                    List<Player> playersBeaten = new ArrayList<>();
-
-                    if(beats.containsKey(move.getPlayer())){
-                        playersBeaten = beats.get(move.getPlayer());
-                    }
-
-                    playersBeaten.add(move2.getPlayer());
-                    beats.put(move.getPlayer(), playersBeaten);
-
-                    outs.add(move2.getPlayer());
+                    updateBeatsReports(move, move2);
+                    updateOutsList(move2);
                 }
             });
         });
@@ -74,9 +66,7 @@ public class Roshambo extends Game {
         return getPlayers().size() >= MINIMUM_PLAYERS_NUMBER;
     }
 
-    /*
-    * Warranty that all the players have made a move
-    * */
+
     public boolean allPlayersHaveMove(){
         Set<Player> lst = new HashSet<>();
         moves.forEach(move -> {
@@ -92,6 +82,25 @@ public class Roshambo extends Game {
         });
         return strategies.size() == 1;
     }
+
+    public void updateBeatsReports(Move move, Move moveBeaten){
+        List<Player> playersBeaten = new ArrayList<>();
+
+        if(beats.containsKey(move.getPlayer())){
+            playersBeaten = beats.get(move.getPlayer());
+        }
+
+        playersBeaten.add(moveBeaten.getPlayer());
+        beats.put(move.getPlayer(), playersBeaten);
+    }
+
+    public  void updateOutsList(Move moveBeaten){
+        outs.add(moveBeaten.getPlayer());
+    }
+
+
+    // Getters and Setters
+
 
     public Set<Player> getOuts() {
         return outs;

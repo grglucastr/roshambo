@@ -1,26 +1,16 @@
 package com.grglucastr.roshambo.model;
 
-import java.io.Serializable;
 import java.util.Objects;
 
-public class Move implements Serializable {
+public class Move extends BaseObject {
 
-    private Integer id;
     private Player player;
     private Strategy strategy;
 
     public Move(Integer id, Player player, Strategy strategy) {
-        this.id = id;
+        super(id);
         this.player = player;
         this.strategy = strategy;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
     }
 
     public Player getPlayer() {
