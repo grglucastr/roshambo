@@ -1,8 +1,7 @@
 package com.grglucastr.roshambo.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import java.util.*;
+import com.grglucastr.roshambo.util.SetStrategy;
 
 public class Strategy extends BaseObject {
 

@@ -1,4 +1,6 @@
-package com.grglucastr.roshambo.model;
+package com.grglucastr.roshambo.util;
+import com.grglucastr.roshambo.model.Strategy;
+
 import java.util.HashSet;
 
 public class SetStrategy extends HashSet<Strategy> {
