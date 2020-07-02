@@ -92,7 +92,8 @@ public class RoshamboTest {
 
     @Test
     public void gameHasWinner(){
-        int losers = roshambo.getPlayers().size() - 1;
+        int qtyLosers = roshambo.getPlayers().size() - 1;
+        int qtyPlayersThatBeats = 2;
 
         roshambo.getMoves().clear();
         roshambo.getMoves().addAll(getMovesWithWinnerStrategy());
@@ -100,7 +101,8 @@ public class RoshamboTest {
 
         assertEquals(GameStatus.FINISHED, roshambo.getGameStatus());
         assertEquals(GameResult.WINNER, roshambo.getGameResult());
-        assertEquals(losers, roshambo.getOuts().size());
+        assertEquals(qtyLosers, roshambo.getOuts().size());
+        assertEquals(qtyPlayersThatBeats, roshambo.getBeats().size());
         assertNotNull(roshambo.getWinner());
     }
 
