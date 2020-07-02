@@ -199,20 +199,20 @@ public class RoshamboTest {
         Strategy spock = new Strategy(4, "Spock");
         Strategy lizard = new Strategy(5, "Lizard");
 
-        rock.setStrengths(scissor, lizard);
-        rock.setWeaknesses(paper,spock);
+        rock.setMultipleStrengths(scissor, lizard);
+        rock.setMultipleWeaknesses(paper,spock, rock);
 
-        paper.setStrengths(rock, spock);
-        paper.setWeaknesses(scissor, lizard);
+        paper.setMultipleStrengths(rock, spock);
+        paper.setMultipleWeaknesses(scissor, lizard);
 
-        scissor.setStrengths(paper, lizard);
-        scissor.setWeaknesses(rock, spock);
+        scissor.setMultipleStrengths(paper, lizard);
+        scissor.setMultipleWeaknesses(rock, spock);
 
-        spock.setStrengths(rock, scissor);
-        spock.setWeaknesses(paper, lizard);
+        spock.setMultipleStrengths(rock, scissor);
+        spock.setMultipleWeaknesses(paper, lizard);
 
-        lizard.setStrengths(paper, spock);
-        lizard.setWeaknesses(rock, scissor);
+        lizard.setMultipleStrengths(paper, spock);
+        lizard.setMultipleWeaknesses(rock, scissor);
 
         return Arrays.asList(rock, paper, scissor, spock, lizard);
     }
