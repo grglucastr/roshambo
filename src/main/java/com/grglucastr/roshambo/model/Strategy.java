@@ -1,18 +1,24 @@
 package com.grglucastr.roshambo.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.*;
 
 public class Strategy extends BaseObject {
 
     private String name;
-    private Set<Strategy> weaknesses;
-    private Set<Strategy> strengths;
+    private SetStrategy weaknesses;
+    private SetStrategy strengths;
+
+    public Strategy(Integer id) {
+        super(id);
+    }
 
     public Strategy(Integer id, String name) {
         super(id);
         this.name = name;
-        this.weaknesses = new HashSet<>();
-        this.strengths = new HashSet<>();
+        this.weaknesses = new SetStrategy(this);
+        this.strengths = new SetStrategy(this);
     }
 
     public boolean beats(Strategy strategy){
@@ -32,29 +38,31 @@ public class Strategy extends BaseObject {
         this.name = name;
     }
 
-    public Set<Strategy> getWeaknesses() {
+    @JsonIgnore
+    public SetStrategy getWeaknesses() {
         return weaknesses;
     }
 
-    public void setWeaknesses(Set<Strategy> weaknesses) {
+    public void setWeaknesses(SetStrategy weaknesses) {
         this.weaknesses = weaknesses;
     }
 
-    public void setWeaknesses(Strategy... weaknesses) {
+    public void setMultipleWeaknesses(Strategy... weaknesses) {
         for (int i = 0; i < weaknesses.length; i++) {
             this.weaknesses.add(weaknesses[i]);
         }
     }
 
-    public Set<Strategy> getStrengths() {
+    @JsonIgnore
+    public SetStrategy getStrengths() {
         return strengths;
     }
 
-    public void setStrengths(Set<Strategy> strengths) {
+    public void setStrengths(SetStrategy strengths) {
         this.strengths = strengths;
     }
 
-    public void setStrengths(Strategy... strengths) {
+    public void setMultipleStrengths(Strategy... strengths) {
         for (int i = 0; i < strengths.length; i++) {
             this.strengths.add(strengths[i]);
         }
