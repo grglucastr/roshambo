@@ -54,27 +54,27 @@ public class StrategyTest {
 
     public List<Strategy> getStrategies(){
 
-        Strategy s1 = new Strategy(1, "Rock");
-        Strategy s2 = new Strategy(2, "Paper");
-        Strategy s3 = new Strategy(3, "Scissor");
-        Strategy s4 = new Strategy(4, "Spock");
-        Strategy s5 = new Strategy(5, "Lizard");
+        Strategy rock = new Strategy(1, "Rock");
+        Strategy paper = new Strategy(2, "Paper");
+        Strategy scissor = new Strategy(3, "Scissor");
+        Strategy spock = new Strategy(4, "Spock");
+        Strategy lizard = new Strategy(5, "Lizard");
 
-        s1.setStrengths(s3, s5);
-        s1.setWeaknesses(s2,s4);
+        rock.setMultipleStrengths(scissor, lizard);
+        rock.setMultipleWeaknesses(paper,spock,rock);
 
-        s2.setStrengths(s1, s4);
-        s2.setWeaknesses(s3, s5);
+        paper.setMultipleStrengths(rock, spock);
+        paper.setMultipleWeaknesses(scissor, lizard);
 
-        s3.setStrengths(s2, s5);
-        s3.setWeaknesses(s1, s4);
+        scissor.setMultipleStrengths(paper, lizard);
+        scissor.setMultipleWeaknesses(rock, spock);
 
-        s4.setStrengths(s1, s3);
-        s4.setWeaknesses(s2, s5);
+        spock.setMultipleStrengths(rock, scissor);
+        spock.setMultipleWeaknesses(paper, lizard);
 
-        s5.setStrengths(s2, s4);
-        s5.setWeaknesses(s1, s3);
+        lizard.setMultipleStrengths(paper, spock);
+        lizard.setMultipleWeaknesses(rock, scissor);
 
-        return Arrays.asList(s1, s2, s3, s4, s5);
+        return Arrays.asList(rock, paper, scissor, spock, lizard);
     }
 }
