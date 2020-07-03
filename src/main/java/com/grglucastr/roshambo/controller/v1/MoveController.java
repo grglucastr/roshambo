@@ -47,7 +47,6 @@ public class MoveController implements HTTPRequestable<Move> {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @Override
     @PostMapping(value = "/moves", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Move> addNew(@RequestBody Move newObj) {
         Optional<Player> optionalPlayer = playerRepository.findById(newObj.getPlayer().getId());

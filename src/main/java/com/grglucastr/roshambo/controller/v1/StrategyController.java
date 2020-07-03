@@ -39,7 +39,6 @@ public class StrategyController implements HTTPRequestable<Strategy>  {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @Override
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Strategy> addNew(@RequestBody Strategy newObj) {
         Strategy strategy = strategyRepository.add(newObj);
