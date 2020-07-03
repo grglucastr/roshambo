@@ -3,11 +3,11 @@ import com.grglucastr.roshambo.model.Strategy;
 
 import java.util.HashSet;
 
-public class SetStrategy extends HashSet<Strategy> {
+public class SetSubStrategy extends HashSet<Strategy> {
 
     private Strategy parent;
 
-    public SetStrategy(Strategy parent){
+    public SetSubStrategy(Strategy parent){
         this.parent = parent;
     }
 

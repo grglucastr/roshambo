@@ -1,13 +1,13 @@
 package com.grglucastr.roshambo.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.grglucastr.roshambo.util.SetStrategy;
+import com.grglucastr.roshambo.util.SetSubStrategy;
 
 public class Strategy extends BaseObject {
 
     private String name;
-    private SetStrategy weaknesses;
-    private SetStrategy strengths;
+    private SetSubStrategy weaknesses;
+    private SetSubStrategy strengths;
 
     public Strategy(Integer id) {
         super(id);
@@ -16,8 +16,8 @@ public class Strategy extends BaseObject {
     public Strategy(Integer id, String name) {
         super(id);
         this.name = name;
-        this.weaknesses = new SetStrategy(this);
-        this.strengths = new SetStrategy(this);
+        this.weaknesses = new SetSubStrategy(this);
+        this.strengths = new SetSubStrategy(this);
     }
 
     public boolean beats(Strategy strategy){
@@ -38,11 +38,11 @@ public class Strategy extends BaseObject {
     }
 
     @JsonIgnore
-    public SetStrategy getWeaknesses() {
+    public SetSubStrategy getWeaknesses() {
         return weaknesses;
     }
 
-    public void setWeaknesses(SetStrategy weaknesses) {
+    public void setWeaknesses(SetSubStrategy weaknesses) {
         this.weaknesses = weaknesses;
     }
 
@@ -53,11 +53,11 @@ public class Strategy extends BaseObject {
     }
 
     @JsonIgnore
-    public SetStrategy getStrengths() {
+    public SetSubStrategy getStrengths() {
         return strengths;
     }
 
-    public void setStrengths(SetStrategy strengths) {
+    public void setStrengths(SetSubStrategy strengths) {
         this.strengths = strengths;
     }
 
