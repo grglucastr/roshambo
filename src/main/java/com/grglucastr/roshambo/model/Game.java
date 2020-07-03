@@ -1,5 +1,6 @@
 package com.grglucastr.roshambo.model;
 
+import java.util.HashSet;
 import java.util.Set;
 
 public abstract class Game extends BaseObject {
@@ -10,15 +11,15 @@ public abstract class Game extends BaseObject {
     protected Player winner;
     protected GameResult gameResult;
 
-    public Game(Integer id, Set<Player> players) {
+    public Game(Integer id) {
         super(id);
-        this.players = players;
         this.gameResult = GameResult.NOT_DEFINED;
     }
 
     public abstract void preStart();
     public abstract void runGameRule();
     public abstract void finish();
+    public abstract Set<Player> loadPlayers();
     public abstract boolean hasPlayers();
 
     public void start(){

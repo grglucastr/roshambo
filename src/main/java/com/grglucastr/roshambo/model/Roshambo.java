@@ -1,5 +1,6 @@
 package com.grglucastr.roshambo.model;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Roshambo extends Game {
 
@@ -9,11 +10,13 @@ public class Roshambo extends Game {
     private Set<Player> outs;
     private HashMap<Player, List<Player>> beats;
 
-    public Roshambo(Integer sessionId, Set<Player> players, Set<Move> moves) {
-        super(sessionId, players);
+    public Roshambo(Integer sessionId, Set<Move> moves) {
+        super(sessionId);
         this.moves = moves;
+        loadPlayers();
         outs = new HashSet<>();
         beats = new HashMap<>();
+
     }
 
     @Override
@@ -98,9 +101,14 @@ public class Roshambo extends Game {
         outs.add(moveBeaten.getPlayer());
     }
 
+    @Override
+    public Set<Player> loadPlayers() {
+        Set<Player> players = moves.stream().map(move -> move.getPlayer()).collect(Collectors.toSet());
+        setPlayers(players);
+        return players;
+    }
 
     // Getters and Setters
-
 
     public Set<Player> getOuts() {
         return outs;
