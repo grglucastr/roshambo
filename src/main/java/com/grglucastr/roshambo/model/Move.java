@@ -7,6 +7,10 @@ public class Move extends BaseObject {
     private Player player;
     private Strategy strategy;
 
+    public Move(Integer id) {
+        super(id);
+    }
+
     public Move(Integer id, Player player, Strategy strategy) {
         super(id);
         this.player = player;
