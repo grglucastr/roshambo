@@ -2,26 +2,21 @@ package com.grglucastr.roshambo.model;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 
-
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class RoshamboTest {
+public class RoshamboSessionTest {
 
-    @Mock
-    private Roshambo roshambo;
+    private RoshamboSession roshambo;
 
     @BeforeEach
     void setUp() {
-        roshambo = Mockito.spy(new Roshambo(111, getMoves()));
+        roshambo = Mockito.spy(new RoshamboSession(111, "Who chooses next party playlist"));
+        roshambo.getPlayers().addAll(Player.getPlayers());
+        roshambo.getMoves().addAll(Move.getSampleMoves());
     }
 
     @Test
@@ -33,7 +28,7 @@ public class RoshamboTest {
     @Test
     public void gameLoadingThrowsAnExceptionDueAllPlayersHaveNotMadeTheirMoveYet(){
         RuntimeException ex = assertThrows(RuntimeException.class, () ->{
-            Move move = getMoves().stream().collect(Collectors.toList()).get(0);
+            Move move = Move.getSampleMoves().stream().collect(Collectors.toList()).get(0);
             roshambo.getMoves().clear();
             roshambo.getMoves().add(move);
             roshambo.getMoves().add(move);
@@ -47,9 +42,9 @@ public class RoshamboTest {
     }
 
     @Test
-    public void gameDoNotStartDueTheLackOfPlayers(){
+    public void gameThrowsAnExceptionDueTheLackOfPlayers(){
         RuntimeException ex = assertThrows(RuntimeException.class, ()->{
-            Player p = getPlayers().get(0);
+            Player p = Player.getPlayers().get(0);
 
             roshambo.getPlayers().clear();
             roshambo.getPlayers().add(p);
@@ -57,6 +52,19 @@ public class RoshamboTest {
         });
 
         String message = "Unable to start. Game has not enough players.";
+
+        assertNotNull(ex.getMessage());
+        assertEquals(message, ex.getMessage());
+    }
+
+    @Test
+    public void gameThrowsAnExceptionDueItStrategiesListIsEmpty(){
+        RuntimeException ex = assertThrows(RuntimeException.class, () -> {
+           roshambo.getStrategies().clear();
+           roshambo.start();
+        });
+
+        String message = "Unable to start. Game session does not have any strategy.";
 
         assertNotNull(ex.getMessage());
         assertEquals(message, ex.getMessage());
@@ -80,7 +88,7 @@ public class RoshamboTest {
     @Test
     public void gameHasDrawDueSameStrategy(){
         roshambo.getMoves().clear();
-        roshambo.getMoves().addAll(getMovesSameStrategy());
+        roshambo.getMoves().addAll(Move.getSampleMovesSameStrategy());
         roshambo.start();
 
         assertEquals(GameStatus.FINISHED, roshambo.getGameStatus());
@@ -95,7 +103,7 @@ public class RoshamboTest {
         int qtyPlayersThatBeats = 2;
 
         roshambo.getMoves().clear();
-        roshambo.getMoves().addAll(getMovesWithWinnerStrategy());
+        roshambo.getMoves().addAll(Move.getSampleMovesWithWinnerStrategy());
         roshambo.start();
 
         assertEquals(GameStatus.FINISHED, roshambo.getGameStatus());
@@ -113,7 +121,7 @@ public class RoshamboTest {
     @Test
     public void allPlayersHaveNotMoveTest(){
 
-        Move movePlayer1 = getMoves().stream().collect(Collectors.toList()).get(0);
+        Move movePlayer1 = Move.getSampleMoves().stream().collect(Collectors.toList()).get(0);
 
         roshambo.getMoves().clear();
         roshambo.getMoves().add(movePlayer1);
@@ -131,7 +139,7 @@ public class RoshamboTest {
 
     @Test
     public void hasNotEnoughPlayers(){
-        Player player = getPlayers().get(0);
+        Player player = Player.getPlayers().get(0);
 
         // Adding two times the same player does not count as if were two players
         roshambo.getPlayers().clear();
@@ -144,7 +152,7 @@ public class RoshamboTest {
     @Test
     public void playersHaveSameStrategyTest(){
         roshambo.getMoves().clear();
-        roshambo.getMoves().addAll(getMovesSameStrategy());
+        roshambo.getMoves().addAll(Move.getSampleMovesSameStrategy());
         assertTrue(roshambo.playersHaveSameStrategy());
     }
 
@@ -153,68 +161,14 @@ public class RoshamboTest {
         assertFalse(roshambo.playersHaveSameStrategy());
     }
 
-    // Helpers methods
-    public Set<Move> getMoves(){
-        Set<Move> moves = new HashSet<>();
-        moves.add(new Move(1, getPlayers().get(0), getStrategies().get(0)));
-        moves.add(new Move(2, getPlayers().get(1), getStrategies().get(1)));
-        moves.add(new Move(3, getPlayers().get(2), getStrategies().get(2)));
-        moves.add(new Move(4, getPlayers().get(3), getStrategies().get(3)));
-        return moves;
+    @Test
+    public void gameHasItOwnsStrategies(){
+        assertTrue(roshambo.getStrategies().size() > 0);
     }
 
-    public Set<Move> getMovesSameStrategy(){
-        Set<Move> moves = new HashSet<>();
-        moves.add(new Move(1, getPlayers().get(0), getStrategies().get(0)));
-        moves.add(new Move(2, getPlayers().get(1), getStrategies().get(0)));
-        moves.add(new Move(3, getPlayers().get(2), getStrategies().get(0)));
-        moves.add(new Move(4, getPlayers().get(3), getStrategies().get(0)));
-        return moves;
+    @Test
+    public void gameDoesNotHaveAnyStrategy(){
+        roshambo.getStrategies().clear();
+        assertTrue(roshambo.getStrategies().isEmpty());
     }
-
-    public Set<Move> getMovesWithWinnerStrategy(){
-        Set<Move> moves = new HashSet<>();
-        moves.add(new Move(1, getPlayers().get(0), getStrategies().get(1)));
-        moves.add(new Move(2, getPlayers().get(1), getStrategies().get(1)));
-        moves.add(new Move(3, getPlayers().get(2), getStrategies().get(2)));
-        moves.add(new Move(4, getPlayers().get(3), getStrategies().get(4)));
-        return moves;
-    }
-
-    public List<Player> getPlayers(){
-        List<Player> players = Arrays.asList(
-                new Player(1, "Player1"),
-                new Player(2, "Player2"),
-                new Player(3, "Player3"),
-                new Player(4, "Player4")
-        );
-        return players;
-    }
-
-    public List<Strategy> getStrategies(){
-        Strategy rock = new Strategy(1, "Rock");
-        Strategy paper = new Strategy(2, "Paper");
-        Strategy scissor = new Strategy(3, "Scissor");
-        Strategy spock = new Strategy(4, "Spock");
-        Strategy lizard = new Strategy(5, "Lizard");
-
-        rock.setMultipleStrengths(scissor, lizard);
-        rock.setMultipleWeaknesses(paper,spock, rock);
-
-        paper.setMultipleStrengths(rock, spock);
-        paper.setMultipleWeaknesses(scissor, lizard);
-
-        scissor.setMultipleStrengths(paper, lizard);
-        scissor.setMultipleWeaknesses(rock, spock);
-
-        spock.setMultipleStrengths(rock, scissor);
-        spock.setMultipleWeaknesses(paper, lizard);
-
-        lizard.setMultipleStrengths(paper, spock);
-        lizard.setMultipleWeaknesses(rock, scissor);
-
-        return Arrays.asList(rock, paper, scissor, spock, lizard);
-    }
-
-
 }

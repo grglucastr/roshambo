@@ -3,6 +3,9 @@ package com.grglucastr.roshambo.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.grglucastr.roshambo.util.SetSubStrategy;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class Strategy extends BaseObject {
 
     private String name;
@@ -65,5 +68,30 @@ public class Strategy extends BaseObject {
         for (int i = 0; i < strengths.length; i++) {
             this.strengths.add(strengths[i]);
         }
+    }
+
+    public static List<Strategy> getStrategies(){
+        Strategy rock = new Strategy(1, "Rock");
+        Strategy paper = new Strategy(2, "Paper");
+        Strategy scissor = new Strategy(3, "Scissor");
+        Strategy spock = new Strategy(4, "Spock");
+        Strategy lizard = new Strategy(5, "Lizard");
+
+        rock.setMultipleStrengths(scissor, lizard);
+        rock.setMultipleWeaknesses(paper,spock,rock);
+
+        paper.setMultipleStrengths(rock, spock);
+        paper.setMultipleWeaknesses(scissor, lizard);
+
+        scissor.setMultipleStrengths(paper, lizard);
+        scissor.setMultipleWeaknesses(rock, spock);
+
+        spock.setMultipleStrengths(rock, scissor);
+        spock.setMultipleWeaknesses(paper, lizard);
+
+        lizard.setMultipleStrengths(paper, spock);
+        lizard.setMultipleWeaknesses(rock, scissor);
+
+        return Arrays.asList(rock, paper, scissor, spock, lizard);
     }
 }

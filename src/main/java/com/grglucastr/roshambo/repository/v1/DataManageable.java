@@ -1,9 +1,6 @@
 package com.grglucastr.roshambo.repository.v1;
 
-import com.grglucastr.roshambo.model.Player;
-
 import java.util.*;
-import java.util.stream.Collectors;
 
 public interface DataManageable<T, U> {
 

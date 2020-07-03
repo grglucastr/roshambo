@@ -14,6 +14,7 @@ public abstract class Game extends BaseObject {
     public Game(Integer id) {
         super(id);
         this.gameResult = GameResult.NOT_DEFINED;
+        this.players = new HashSet<>();
     }
 
     public abstract void preStart();

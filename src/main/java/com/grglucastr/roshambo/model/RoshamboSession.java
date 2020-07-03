@@ -1,26 +1,39 @@
 package com.grglucastr.roshambo.model;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class Roshambo extends Game {
+public class RoshamboSession extends Game {
 
     public static final int MINIMUM_PLAYERS_NUMBER = 2;
 
+    private String name;
+
+    @JsonIgnore
     private Set<Move> moves;
+    @JsonIgnore
+    private Set<Strategy> strategies;
+    @JsonIgnore
     private Set<Player> outs;
+    @JsonIgnore
     private HashMap<Player, List<Player>> beats;
 
-    public Roshambo(Integer sessionId, Set<Move> moves) {
-        super(sessionId);
-        this.moves = moves;
-        loadPlayers();
-        outs = new HashSet<>();
-        beats = new HashMap<>();
-
+    public RoshamboSession(Integer id, String name) {
+        super(id);
+        this.name = name;
+        this.moves = new HashSet<>();
+        this.strategies = new HashSet<>(Strategy.getStrategies());
+        this.outs = new HashSet<>();
+        this.beats = new HashMap<>();
     }
 
     @Override
     public void preStart() {
+        if(strategies.isEmpty()){
+            throw new RuntimeException("Unable to start. Game session does not have any strategy.");
+        }
+
         if(!allPlayersHaveMove()){
             throw new RuntimeException("Unable to start. Not all players have made a move yet.");
         }
@@ -71,6 +84,10 @@ public class Roshambo extends Game {
 
 
     public boolean allPlayersHaveMove(){
+        if(moves.size() == 0){
+            return false;
+        }
+
         Set<Player> lst = new HashSet<>();
         moves.forEach(move -> {
             lst.add(move.getPlayer());
@@ -109,7 +126,6 @@ public class Roshambo extends Game {
     }
 
     // Getters and Setters
-
     public Set<Player> getOuts() {
         return outs;
     }
@@ -118,7 +134,52 @@ public class Roshambo extends Game {
         return beats;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public Set<Move> getMoves() {
         return moves;
+    }
+
+    public void setMoves(Set<Move> moves) {
+        this.moves = moves;
+    }
+
+    public Set<Strategy> getStrategies() {
+        return strategies;
+    }
+
+    public void setStrategies(Set<Strategy> strategies) {
+        this.strategies = strategies;
+    }
+
+
+    @Override
+    @JsonIgnore
+    public Set<Player> getPlayers() {
+        return super.getPlayers();
+    }
+
+    @Override
+    @JsonIgnore
+    public GameStatus getGameStatus() {
+        return super.getGameStatus();
+    }
+
+    @Override
+    @JsonIgnore
+    public Player getWinner() {
+        return super.getWinner();
+    }
+
+    @Override
+    @JsonIgnore
+    public GameResult getGameResult() {
+        return super.getGameResult();
     }
 }
