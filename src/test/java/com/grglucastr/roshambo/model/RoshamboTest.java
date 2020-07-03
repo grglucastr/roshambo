@@ -21,8 +21,7 @@ public class RoshamboTest {
 
     @BeforeEach
     void setUp() {
-        Set<Player> players = getPlayers().stream().collect(Collectors.toSet());
-        roshambo = Mockito.spy(new Roshambo(111, players, getMoves()));
+        roshambo = Mockito.spy(new Roshambo(111, getMoves()));
     }
 
     @Test
