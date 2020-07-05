@@ -1,5 +1,7 @@
 package com.grglucastr.roshambo.model;
 
+import com.grglucastr.roshambo.exceptions.NotEnoughPlayersException;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -24,7 +26,7 @@ public abstract class Game extends BaseObject {
 
     public void start(){
         if(!hasPlayers()){
-            throw new RuntimeException("Unable to start. Game has not enough players.");
+            throw new NotEnoughPlayersException("Unable to start. Game has not enough players.");
         }
 
         preStart();

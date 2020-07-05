@@ -1,5 +1,6 @@
 package com.grglucastr.roshambo.controller.v1;
 
+import com.grglucastr.roshambo.exceptions.NotEnoughPlayersException;
 import com.grglucastr.roshambo.model.GameResult;
 import com.grglucastr.roshambo.model.GameStatus;
 import com.grglucastr.roshambo.model.Player;
@@ -62,7 +63,7 @@ public class RoshamboSessionController {
     public ResponseEntity<GameStatus> startGame(@PathVariable("sessionId") Integer sessionId){
         Optional<RoshamboSession> optSession = roshamboRepository.findById(sessionId);
         if(optSession.isEmpty()){
-            return ResponseEntity.noContent().build();
+            return ResponseEntity.notFound().build();
         }
 
         optSession.get().start();
@@ -75,7 +76,7 @@ public class RoshamboSessionController {
     public ResponseEntity<GameResult> gameResults(@PathVariable("sessionId") Integer sessionId){
         Optional<RoshamboSession> optSession = roshamboRepository.findById(sessionId);
         if(optSession.isEmpty()){
-            return ResponseEntity.noContent().build();
+            return ResponseEntity.notFound().build();
         }
 
         return ResponseEntity.ok(optSession.get().getGameResult());
@@ -85,7 +86,7 @@ public class RoshamboSessionController {
     public ResponseEntity<Player> gameWinner(@PathVariable("sessionId") Integer sessionId){
         Optional<RoshamboSession> optSession = roshamboRepository.findById(sessionId);
         if(optSession.isEmpty()){
-            return ResponseEntity.noContent().build();
+            return ResponseEntity.notFound().build();
         }
 
         return ResponseEntity.ok(optSession.get().getWinner());
@@ -95,7 +96,7 @@ public class RoshamboSessionController {
     public ResponseEntity<GameStatus> gameStatus(@PathVariable("sessionId") Integer sessionId){
         Optional<RoshamboSession> optSession = roshamboRepository.findById(sessionId);
         if(optSession.isEmpty()){
-            return ResponseEntity.noContent().build();
+            return ResponseEntity.notFound().build();
         }
 
         return ResponseEntity.ok(optSession.get().getGameStatus());
@@ -105,7 +106,7 @@ public class RoshamboSessionController {
     public ResponseEntity<HashMap<Player, List<Player>>> eliminations(@PathVariable("sessionId") Integer sessionId){
         Optional<RoshamboSession> optSession = roshamboRepository.findById(sessionId);
         if(optSession.isEmpty()){
-            return ResponseEntity.noContent().build();
+            return ResponseEntity.notFound().build();
         }
 
         return ResponseEntity.ok(optSession.get().getBeats());
