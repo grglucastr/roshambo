@@ -1,7 +1,7 @@
 package com.grglucastr.roshambo.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.grglucastr.roshambo.exceptions.EmptyStrategiesException;
-import com.grglucastr.roshambo.exceptions.NotEnoughPlayersException;
+import com.grglucastr.roshambo.exceptions.NotEnoughMovesException;
 
 import java.util.*;
 
@@ -41,7 +41,7 @@ public class RoshamboSession extends Game {
         }
 
         if(!allPlayersHaveMove()){
-            throw new NotEnoughPlayersException("Unable to start. Not all players have made a move yet.");
+            throw new NotEnoughMovesException("Unable to start. Not all players have made a move yet.");
         }
     }
 

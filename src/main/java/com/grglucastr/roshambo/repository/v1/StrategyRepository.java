@@ -49,6 +49,7 @@ public class StrategyRepository extends BaseRepository<Strategy> {
     @Override
     public boolean remove(Strategy obj) {
         List<Strategy> lst = listAll();
+        removeFromSubStrategy(obj.getId());
         boolean remove = lst.remove(obj);
 
         if(remove){
@@ -62,6 +63,7 @@ public class StrategyRepository extends BaseRepository<Strategy> {
     @Override
     public boolean removeById(Integer id) {
         List<Strategy> lst = listAll();
+        removeFromSubStrategy(id);
         boolean remove = lst.removeIf(strategy -> strategy.getId() == id);
 
         if(remove){
@@ -77,5 +79,12 @@ public class StrategyRepository extends BaseRepository<Strategy> {
         remove(obj);
         strategies.add(obj);
         return obj;
+    }
+
+    public void removeFromSubStrategy(Integer strategyId){
+        strategies.forEach(strategy -> {
+            strategy.getStrengths().removeIf(s -> s.getId().equals(strategyId));
+            strategy.getWeaknesses().removeIf(s -> s.getId().equals(strategyId));
+        });
     }
 }
