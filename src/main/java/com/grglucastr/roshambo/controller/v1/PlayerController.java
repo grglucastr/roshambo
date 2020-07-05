@@ -186,7 +186,7 @@ public class PlayerController extends BaseController{
         moveRepository = new MoveRepository(optSession.get().getMoves());
         Optional<Move> foundMove = moveRepository.findById(moveId);
 
-        if(foundPlayer.isEmpty()){
+        if(foundMove.isEmpty()){
             return ResponseEntity.notFound().build();
         }
 
@@ -195,6 +195,4 @@ public class PlayerController extends BaseController{
 
         return ResponseEntity.noContent().build();
     }
-
-
 }
