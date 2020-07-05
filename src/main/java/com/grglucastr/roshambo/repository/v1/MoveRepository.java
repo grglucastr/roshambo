@@ -56,7 +56,7 @@ public class MoveRepository extends BaseRepository<Move> {
     @Override
     public boolean removeById(Integer id) {
         List<Move> lst = listAll();
-        boolean remove = lst.removeIf(obj -> obj.getId() == id);
+        boolean remove = lst.removeIf(obj -> obj.getId().equals(id));
 
         if(remove){
             moves.clear();
@@ -78,6 +78,18 @@ public class MoveRepository extends BaseRepository<Move> {
         return moves.stream()
                 .filter(move -> move.getPlayer().getId().equals(playerId))
                 .collect(Collectors.toSet());
+    }
+
+    public boolean removeByPlayerId(Integer playerId){
+        List<Move> lst = listAll();
+        boolean remove = lst.removeIf(obj -> obj.getPlayer().getId().equals(playerId));
+
+        if(remove){
+            moves.clear();
+            moves.addAll(lst);
+        }
+
+        return remove;
     }
 
 }

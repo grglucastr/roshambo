@@ -15,7 +15,7 @@ public class RoshamboSessionTest {
     @BeforeEach
     void setUp() {
         roshambo = Mockito.spy(new RoshamboSession(111, "Who chooses next party playlist"));
-        roshambo.getPlayers().addAll(Player.getPlayers());
+        roshambo.getPlayers().addAll(Player.sampleListOfPlayers());
         roshambo.getMoves().addAll(Move.getSampleMoves());
     }
 
@@ -44,7 +44,7 @@ public class RoshamboSessionTest {
     @Test
     public void gameThrowsAnExceptionDueTheLackOfPlayers(){
         RuntimeException ex = assertThrows(RuntimeException.class, ()->{
-            Player p = Player.getPlayers().get(0);
+            Player p = Player.sampleListOfPlayers().get(0);
 
             roshambo.getPlayers().clear();
             roshambo.getPlayers().add(p);
@@ -139,7 +139,7 @@ public class RoshamboSessionTest {
 
     @Test
     public void hasNotEnoughPlayers(){
-        Player player = Player.getPlayers().get(0);
+        Player player = Player.sampleListOfPlayers().get(0);
 
         // Adding two times the same player does not count as if were two players
         roshambo.getPlayers().clear();

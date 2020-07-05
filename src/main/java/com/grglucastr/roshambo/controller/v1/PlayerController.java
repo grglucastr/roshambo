@@ -108,10 +108,10 @@ public class PlayerController extends BaseController{
         }
 
         if(playerRepository.removeById(id)){
+            optSession.get().getPlayers().addAll(playerRepository.listAll());
+            removeMoveByPlayer(optSession.get(), foundPlayer.get());
             return ResponseEntity.noContent().build();
         }
-
-        optSession.get().getPlayers().addAll(playerRepository.listAll());
 
         return ResponseEntity.notFound().build();
     }
@@ -167,10 +167,9 @@ public class PlayerController extends BaseController{
     }
 
 
-    @DeleteMapping(value = "{playerId}/moves/{moveId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @DeleteMapping(value = "{playerId}/moves", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Move> removePlayerMove(@PathVariable("sessionId") Integer sessionId,
-                                                 @PathVariable("playerId") Integer playerId,
-                                                 @PathVariable("moveId") Integer moveId){
+                                                 @PathVariable("playerId") Integer playerId){
         Optional<RoshamboSession> optSession = getSession(sessionId);
         if(optSession.isEmpty()){
             return ResponseEntity.notFound().build();
@@ -183,16 +182,14 @@ public class PlayerController extends BaseController{
             return ResponseEntity.notFound().build();
         }
 
-        moveRepository = new MoveRepository(optSession.get().getMoves());
-        Optional<Move> foundMove = moveRepository.findById(moveId);
-
-        if(foundMove.isEmpty()){
-            return ResponseEntity.notFound().build();
-        }
-
-        moveRepository.removeById(moveId);
-        optSession.get().getMoves().addAll(moveRepository.listAll());
+        removeMoveByPlayer(optSession.get(), foundPlayer.get());
 
         return ResponseEntity.noContent().build();
+    }
+
+    private void removeMoveByPlayer(RoshamboSession session, Player player){
+        moveRepository = new MoveRepository(session.getMoves());
+        moveRepository.removeByPlayerId(player.getId());
+        session.getMoves().addAll(moveRepository.listAll());
     }
 }

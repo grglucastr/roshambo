@@ -20,7 +20,6 @@ public abstract class Game extends BaseObject {
     public abstract void preStart();
     public abstract void runGameRule();
     public abstract void finish();
-    public abstract Set<Player> loadPlayers();
     public abstract boolean hasPlayers();
 
     public void start(){

@@ -75,7 +75,7 @@ public class Strategy extends BaseObject {
         }
     }
 
-    public static List<Strategy> getStrategies(){
+    public static List<Strategy> getSampleStrategies(){
         Strategy rock = new Strategy(1, "Rock");
         Strategy paper = new Strategy(2, "Paper");
         Strategy scissor = new Strategy(3, "Scissor");

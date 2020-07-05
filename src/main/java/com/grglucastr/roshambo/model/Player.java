@@ -24,7 +24,7 @@ public class Player extends BaseObject {
         this.name = name;
     }
 
-    public static List<Player> getPlayers(){
+    public static List<Player> sampleListOfPlayers(){
         List<Player> players = Arrays.asList(
                 new Player(1, "Anna"),
                 new Player(2, "Sven"),
@@ -34,4 +34,8 @@ public class Player extends BaseObject {
         return players;
     }
 
+    @Override
+    public String toString() {
+        return name;
+    }
 }

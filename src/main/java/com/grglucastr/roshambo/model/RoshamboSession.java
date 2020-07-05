@@ -2,7 +2,6 @@ package com.grglucastr.roshambo.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class RoshamboSession extends Game {
 
@@ -23,13 +22,18 @@ public class RoshamboSession extends Game {
         super(id);
         this.name = name;
         this.moves = new HashSet<>();
-        this.strategies = new HashSet<>(Strategy.getStrategies());
+        this.strategies = new HashSet<>(Strategy.getSampleStrategies());
         this.outs = new HashSet<>();
         this.beats = new HashMap<>();
     }
 
     @Override
     public void preStart() {
+
+        outs.clear();
+        beats.clear();
+        setWinner(null);
+
         if(strategies.isEmpty()){
             throw new RuntimeException("Unable to start. Game session does not have any strategy.");
         }
@@ -116,13 +120,6 @@ public class RoshamboSession extends Game {
 
     public  void updateOutsList(Move moveBeaten){
         outs.add(moveBeaten.getPlayer());
-    }
-
-    @Override
-    public Set<Player> loadPlayers() {
-        Set<Player> players = moves.stream().map(move -> move.getPlayer()).collect(Collectors.toSet());
-        setPlayers(players);
-        return players;
     }
 
     // Getters and Setters

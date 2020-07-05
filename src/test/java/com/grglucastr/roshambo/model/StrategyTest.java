@@ -13,7 +13,7 @@ public class StrategyTest {
 
     @BeforeEach
     public void setUp(){
-        this.strategies = Strategy.getStrategies();
+        this.strategies = Strategy.getSampleStrategies();
     }
 
     @Test

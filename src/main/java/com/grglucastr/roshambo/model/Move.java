@@ -51,28 +51,28 @@ public class Move extends BaseObject {
     // Helpers methods
     public static Set<Move> getSampleMoves(){
         Set<Move> moves = new HashSet<>();
-        moves.add(new Move(1, Player.getPlayers().get(0), Strategy.getStrategies().get(0)));
-        moves.add(new Move(2, Player.getPlayers().get(1), Strategy.getStrategies().get(1)));
-        moves.add(new Move(3, Player.getPlayers().get(2), Strategy.getStrategies().get(2)));
-        moves.add(new Move(4, Player.getPlayers().get(3), Strategy.getStrategies().get(3)));
+        moves.add(new Move(1, Player.sampleListOfPlayers().get(0), Strategy.getSampleStrategies().get(0)));
+        moves.add(new Move(2, Player.sampleListOfPlayers().get(1), Strategy.getSampleStrategies().get(1)));
+        moves.add(new Move(3, Player.sampleListOfPlayers().get(2), Strategy.getSampleStrategies().get(2)));
+        moves.add(new Move(4, Player.sampleListOfPlayers().get(3), Strategy.getSampleStrategies().get(3)));
         return moves;
     }
 
     public static Set<Move> getSampleMovesSameStrategy(){
         Set<Move> moves = new HashSet<>();
-        moves.add(new Move(1, Player.getPlayers().get(0), Strategy.getStrategies().get(0)));
-        moves.add(new Move(2, Player.getPlayers().get(1), Strategy.getStrategies().get(0)));
-        moves.add(new Move(3, Player.getPlayers().get(2), Strategy.getStrategies().get(0)));
-        moves.add(new Move(4, Player.getPlayers().get(3), Strategy.getStrategies().get(0)));
+        moves.add(new Move(1, Player.sampleListOfPlayers().get(0), Strategy.getSampleStrategies().get(0)));
+        moves.add(new Move(2, Player.sampleListOfPlayers().get(1), Strategy.getSampleStrategies().get(0)));
+        moves.add(new Move(3, Player.sampleListOfPlayers().get(2), Strategy.getSampleStrategies().get(0)));
+        moves.add(new Move(4, Player.sampleListOfPlayers().get(3), Strategy.getSampleStrategies().get(0)));
         return moves;
     }
 
     public static Set<Move> getSampleMovesWithWinnerStrategy(){
         Set<Move> moves = new HashSet<>();
-        moves.add(new Move(1, Player.getPlayers().get(0), Strategy.getStrategies().get(1)));
-        moves.add(new Move(2, Player.getPlayers().get(1), Strategy.getStrategies().get(1)));
-        moves.add(new Move(3, Player.getPlayers().get(2), Strategy.getStrategies().get(2)));
-        moves.add(new Move(4, Player.getPlayers().get(3), Strategy.getStrategies().get(4)));
+        moves.add(new Move(1, Player.sampleListOfPlayers().get(0), Strategy.getSampleStrategies().get(1)));
+        moves.add(new Move(2, Player.sampleListOfPlayers().get(1), Strategy.getSampleStrategies().get(1)));
+        moves.add(new Move(3, Player.sampleListOfPlayers().get(2), Strategy.getSampleStrategies().get(2)));
+        moves.add(new Move(4, Player.sampleListOfPlayers().get(3), Strategy.getSampleStrategies().get(4)));
         return moves;
     }
 }
