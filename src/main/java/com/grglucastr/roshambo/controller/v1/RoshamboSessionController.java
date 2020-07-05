@@ -28,8 +28,8 @@ public class RoshamboSessionController {
         return ResponseEntity.ok(lst);
     }
 
-    @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<RoshamboSession> fingSessionById(@PathVariable("id")Integer id){
+    @GetMapping(value = "/{sessionId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<RoshamboSession> fingSessionById(@PathVariable("sessionId")Integer id){
         Optional<RoshamboSession> optionalRoshamboSession = roshamboRepository.findById(id);
 
         return optionalRoshamboSession.map(session -> ResponseEntity.ok(session))
@@ -42,8 +42,8 @@ public class RoshamboSessionController {
         return ResponseEntity.status(HttpStatus.CREATED).body(session);
     }
 
-    @DeleteMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity deleteSession(@PathVariable("id")Integer id){
+    @DeleteMapping(value = "/{sessionId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity deleteSession(@PathVariable("sessionId")Integer id){
         Optional<RoshamboSession> optionalRoshamboSession = roshamboRepository.findById(id);
 
         if(optionalRoshamboSession.isEmpty()){

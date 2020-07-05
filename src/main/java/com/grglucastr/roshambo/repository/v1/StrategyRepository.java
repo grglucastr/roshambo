@@ -9,7 +9,11 @@ import java.util.stream.Collectors;
 @Repository
 public class StrategyRepository extends BaseRepository<Strategy> {
 
-    private Set<Strategy> strategies = new HashSet<>();
+    private Set<Strategy> strategies;
+
+    public StrategyRepository(Set<Strategy> strategies) {
+        this.strategies = strategies;
+    }
 
     @Override
     public Strategy add(Strategy obj) {

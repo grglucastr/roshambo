@@ -9,7 +9,11 @@ import java.util.stream.Collectors;
 @Repository
 public class PlayerRepository extends BaseRepository<Player>{
 
-    private Set<Player> players = new HashSet<>();
+    private Set<Player> players;
+
+    public PlayerRepository(Set<Player> players) {
+        this.players = players;
+    }
 
     @Override
     public Player add(Player obj) {

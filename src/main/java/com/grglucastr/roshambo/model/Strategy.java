@@ -32,6 +32,11 @@ public class Strategy extends BaseObject {
 
 
     // Getters and setterss
+    @Override
+    public void setId(Integer id) {
+        super.setId(id);
+    }
+
     public String getName() {
         return name;
     }

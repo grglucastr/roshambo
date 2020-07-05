@@ -12,7 +12,11 @@ import java.util.stream.Collectors;
 @Repository
 public class MoveRepository extends BaseRepository<Move> {
 
-    private Set<Move> moves = new HashSet<>();
+    private Set<Move> moves;
+
+    public MoveRepository(Set<Move> moves) {
+        this.moves = moves;
+    }
 
     @Override
     public Move add(Move obj) {
@@ -70,8 +74,10 @@ public class MoveRepository extends BaseRepository<Move> {
         return obj;
     }
 
-    public Optional<Move> findByPlayerId(Integer playerId){
-        return moves.stream().filter(m -> m.getPlayer().getId().equals(playerId)).findFirst();
+    public Set<Move> findMovesByPlayerId(Integer playerId){
+        return moves.stream()
+                .filter(move -> move.getPlayer().getId().equals(playerId))
+                .collect(Collectors.toSet());
     }
 
 }

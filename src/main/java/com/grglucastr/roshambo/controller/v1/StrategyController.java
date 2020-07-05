@@ -1,6 +1,8 @@
 package com.grglucastr.roshambo.controller.v1;
 
+import com.grglucastr.roshambo.model.RoshamboSession;
 import com.grglucastr.roshambo.model.Strategy;
+import com.grglucastr.roshambo.repository.v1.RoshamboSessionRepository;
 import com.grglucastr.roshambo.repository.v1.StrategyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -8,90 +10,160 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/v1/strategies")
-public class StrategyController implements HTTPRequestable<Strategy>  {
+@RequestMapping("/api/v1/roshambo-sessions/{sessionId}/strategies")
+public class StrategyController extends BaseController  {
 
     private StrategyRepository strategyRepository;
 
     @Autowired
-    public StrategyController(StrategyRepository strategyRepository) {
-        this.strategyRepository = strategyRepository;
+    public StrategyController(RoshamboSessionRepository roshamboRepository) {
+        super(roshamboRepository);
     }
 
-    @Override
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<Strategy>> listAll() {
-        return ResponseEntity.ok(strategyRepository.listAll());
+    public ResponseEntity<Set<Strategy>> listAll(@PathVariable("sessionId") Integer sessionId) {
+        Optional<RoshamboSession> optSession = getSession(sessionId);
+
+        return optSession.map(session -> ResponseEntity.ok(session.getStrategies()))
+                .orElse(ResponseEntity.notFound().build());
     }
 
-    @Override
-    @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Strategy> getSingleOne(@PathVariable("id") Integer id) {
-        Optional<Strategy> strategy = strategyRepository.findById(id);
+    
+    @GetMapping(value = "/{strategyId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Strategy> getSingleOne(@PathVariable("sessionId") Integer sessionId,
+                                                 @PathVariable("strategyId") Integer strategyId) {
 
-        return strategy.map(p -> ResponseEntity.ok(p))
+        Optional<RoshamboSession> optSession = getSession(sessionId);
+        if(optSession.isEmpty()){
+            return ResponseEntity.notFound().build();
+        }
+
+        strategyRepository = new StrategyRepository(optSession.get().getStrategies());
+        Optional<Strategy> optStrategy = strategyRepository.findById(strategyId);
+
+        return optStrategy.map(p -> ResponseEntity.ok(p))
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Strategy> addNew(@RequestBody Strategy newObj) {
+    public ResponseEntity<Strategy> addNew(@PathVariable("sessionId") Integer sessionId,
+                                           @RequestBody Strategy newObj) {
+
+        Optional<RoshamboSession> optSession = getSession(sessionId);
+        if(optSession.isEmpty()){
+            return ResponseEntity.notFound().build();
+        }
+
+        strategyRepository = new StrategyRepository(optSession.get().getStrategies());
         Strategy strategy = strategyRepository.add(newObj);
+        optSession.get().getStrategies().add(strategy);
+
         return ResponseEntity.status(HttpStatus.CREATED).body(strategy);
     }
 
-    @Override
-    @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Strategy> update(@PathVariable("id") Integer id, @RequestBody Strategy obj) {
-        Optional<Strategy> found = strategyRepository.findById(id);
+    @PutMapping(value = "/{strategyId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Strategy> update(@PathVariable("sessionId") Integer sessionId,
+                                           @PathVariable("strategyId") Integer strategyId,
+                                           @RequestBody Strategy obj) {
+
+        Optional<RoshamboSession> optSession = getSession(sessionId);
+        if(optSession.isEmpty()){
+            return ResponseEntity.notFound().build();
+        }
+
+        strategyRepository = new StrategyRepository(optSession.get().getStrategies());
+        Optional<Strategy> found = strategyRepository.findById(strategyId);
         if(found.isEmpty()){
             return ResponseEntity.notFound().build();
         }
 
         Strategy updateObj = found.get();
         updateObj.setName(obj.getName());
-        handleStrengthsAndWeaknesses(obj.getStrengths(), updateObj.getStrengths());
-        handleStrengthsAndWeaknesses(obj.getWeaknesses(), updateObj.getWeaknesses());
 
         strategyRepository.update(updateObj);
+        optSession.get().getStrategies().add(updateObj);
+
         return ResponseEntity.ok(updateObj);
     }
 
-    @Override
-    @DeleteMapping(value = "/{id}")
-    public ResponseEntity delete(@PathVariable("id") Integer id) {
-        if(strategyRepository.removeById(id)){
+    
+    @DeleteMapping(value = "/{strategyId}")
+    public ResponseEntity delete(@PathVariable("sessionId") Integer sessionId,
+                                 @PathVariable("strategyId") Integer strategyId) {
+
+        Optional<RoshamboSession> optSession = getSession(sessionId);
+        if(optSession.isEmpty()){
+            return ResponseEntity.notFound().build();
+        }
+
+        strategyRepository = new StrategyRepository(optSession.get().getStrategies());
+        Optional<Strategy> found = strategyRepository.findById(strategyId);
+        if(found.isEmpty()){
+            return ResponseEntity.notFound().build();
+        }
+
+        if(strategyRepository.removeById(strategyId)){
             return ResponseEntity.noContent().build();
         }
+
+        optSession.get().getStrategies().clear();
+        optSession.get().getStrategies().addAll(strategyRepository.listAll());
+
         return ResponseEntity.notFound().build();
     }
 
-    @GetMapping(value = "/{id}/weaknesses", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<Strategy>> listWeaknesses(@PathVariable("id") Integer id) {
-        Optional<Strategy> found = strategyRepository.findById(id);
+    @GetMapping(value = "/{strategyId}/weaknesses", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Set<Strategy>> listWeaknesses(@PathVariable("sessionId") Integer sessionId,
+                                                         @PathVariable("strategyId") Integer strategyId) {
+
+        Optional<RoshamboSession> optSession = getSession(sessionId);
+        if(optSession.isEmpty()){
+            return ResponseEntity.notFound().build();
+        }
+
+        strategyRepository = new StrategyRepository(optSession.get().getStrategies());
+        Optional<Strategy> found = strategyRepository.findById(strategyId);
         if(found.isEmpty()){
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok(found.get().getWeaknesses().stream().collect(Collectors.toList()));
+
+        return ResponseEntity.ok(found.get().getWeaknesses());
     }
 
-    @GetMapping(value = "/{id}/strengths", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<Strategy>> listStrengths(@PathVariable("id") Integer id) {
-        Optional<Strategy> found = strategyRepository.findById(id);
+    @GetMapping(value = "/{strategyId}/strengths", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Set<Strategy>> listStrengths(@PathVariable("sessionId") Integer sessionId,
+                                                       @PathVariable("strategyId") Integer strategyId) {
+
+        Optional<RoshamboSession> optSession = getSession(sessionId);
+        if(optSession.isEmpty()){
+            return ResponseEntity.notFound().build();
+        }
+
+        strategyRepository = new StrategyRepository(optSession.get().getStrategies());
+        Optional<Strategy> found = strategyRepository.findById(strategyId);
         if(found.isEmpty()){
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok(found.get().getStrengths().stream().collect(Collectors.toList()));
+
+        return ResponseEntity.ok(found.get().getStrengths());
     }
 
-    @PostMapping(value = "/{id}/weaknesses", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<Strategy>> addWeaknesses(@PathVariable("id") Integer id, @RequestBody Set<Strategy> strategies) {
-        Optional<Strategy> found = strategyRepository.findById(id);
+    @PostMapping(value = "/{strategyId}/weaknesses", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Set<Strategy>> addWeaknesses(@PathVariable("sessionId") Integer sessionId,
+                                                        @PathVariable("strategyId") Integer strategyId,
+                                                        @RequestBody Set<Strategy> strategies) {
+        Optional<RoshamboSession> optSession = getSession(sessionId);
+        if(optSession.isEmpty()){
+            return ResponseEntity.notFound().build();
+        }
+
+        strategyRepository = new StrategyRepository(optSession.get().getStrategies());
+        Optional<Strategy> found = strategyRepository.findById(strategyId);
         if(found.isEmpty()){
             return ResponseEntity.notFound().build();
         }
@@ -100,12 +172,21 @@ public class StrategyController implements HTTPRequestable<Strategy>  {
         handleStrengthsAndWeaknesses(strategies, updateObj.getWeaknesses());
 
         strategyRepository.update(updateObj);
-        return ResponseEntity.ok(updateObj.getWeaknesses().stream().collect(Collectors.toList()));
+        optSession.get().getStrategies().addAll(strategyRepository.listAll());
+        return ResponseEntity.ok(updateObj.getWeaknesses());
     }
 
-    @DeleteMapping(value = "/{id}/weaknesses/{weaknessId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<Strategy>> removeWeakness(@PathVariable("id") Integer id, @PathVariable("weaknessId") Integer weakId) {
-        Optional<Strategy> found = strategyRepository.findById(id);
+    @DeleteMapping(value = "/{strategyId}/weaknesses/{weaknessId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Set<Strategy>> removeWeakness(@PathVariable("sessionId") Integer sessionId,
+                                                        @PathVariable("strategyId") Integer strategyId,
+                                                        @PathVariable("weaknessId") Integer weakId) {
+        Optional<RoshamboSession> optSession = getSession(sessionId);
+        if(optSession.isEmpty()){
+            return ResponseEntity.notFound().build();
+        }
+
+        strategyRepository = new StrategyRepository(optSession.get().getStrategies());
+        Optional<Strategy> found = strategyRepository.findById(strategyId);
         if(found.isEmpty()){
             return ResponseEntity.notFound().build();
         }
@@ -121,12 +202,23 @@ public class StrategyController implements HTTPRequestable<Strategy>  {
         updateObj.getWeaknesses().addAll(weaknesses);
 
         strategyRepository.update(updateObj);
-        return ResponseEntity.ok(updateObj.getWeaknesses().stream().collect(Collectors.toList()));
+        optSession.get().getStrategies().addAll(strategyRepository.listAll());
+
+        return ResponseEntity.ok(updateObj.getWeaknesses());
     }
 
-    @PostMapping(value = "/{id}/strengths", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<Strategy>> addStrengths(@PathVariable("id") Integer id, @RequestBody Set<Strategy> strategies) {
-        Optional<Strategy> found = strategyRepository.findById(id);
+    @PostMapping(value = "/{strategyId}/strengths", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Set<Strategy>> addStrengths(@PathVariable("sessionId") Integer sessionId,
+                                                      @PathVariable("strategyId") Integer strategyId,
+                                                      @RequestBody Set<Strategy> strategies) {
+
+        Optional<RoshamboSession> optSession = getSession(sessionId);
+        if(optSession.isEmpty()){
+            return ResponseEntity.notFound().build();
+        }
+
+        strategyRepository = new StrategyRepository(optSession.get().getStrategies());
+        Optional<Strategy> found = strategyRepository.findById(strategyId);
         if(found.isEmpty()){
             return ResponseEntity.notFound().build();
         }
@@ -135,12 +227,21 @@ public class StrategyController implements HTTPRequestable<Strategy>  {
         handleStrengthsAndWeaknesses(strategies, updateObj.getStrengths());
 
         strategyRepository.update(updateObj);
-        return ResponseEntity.ok(updateObj.getStrengths().stream().collect(Collectors.toList()));
+        optSession.get().getStrategies().addAll(strategyRepository.listAll());
+        return ResponseEntity.ok(updateObj.getStrengths());
     }
 
-    @DeleteMapping(value = "/{id}/strengths/{strengthId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<Strategy>> removeStrength(@PathVariable("id") Integer id, @PathVariable("strengthId") Integer strengthId) {
-        Optional<Strategy> found = strategyRepository.findById(id);
+    @DeleteMapping(value = "/{strategyId}/strengths/{strengthId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Set<Strategy>> removeStrength(@PathVariable("sessionId") Integer sessionId,
+                                                        @PathVariable("strategyId") Integer strategyId,
+                                                        @PathVariable("strengthId") Integer strengthId) {
+        Optional<RoshamboSession> optSession = getSession(sessionId);
+        if(optSession.isEmpty()){
+            return ResponseEntity.notFound().build();
+        }
+
+        strategyRepository = new StrategyRepository(optSession.get().getStrategies());
+        Optional<Strategy> found = strategyRepository.findById(strategyId);
         if(found.isEmpty()){
             return ResponseEntity.notFound().build();
         }
@@ -149,14 +250,16 @@ public class StrategyController implements HTTPRequestable<Strategy>  {
         Set<Strategy> strengths = updateObj
                 .getStrengths()
                 .stream()
-                .filter(strategy -> strategy.getId() != strengthId)
+                .filter(strength -> strength.getId() != strengthId)
                 .collect(Collectors.toSet());
 
         updateObj.getStrengths().clear();
         updateObj.getStrengths().addAll(strengths);
 
         strategyRepository.update(updateObj);
-        return ResponseEntity.ok(updateObj.getStrengths().stream().collect(Collectors.toList()));
+        optSession.get().getStrategies().addAll(strategyRepository.listAll());
+
+        return ResponseEntity.ok(updateObj.getStrengths());
     }
 
     private void handleStrengthsAndWeaknesses(Set<Strategy> sourceStrategies, Set<Strategy> destinationStrategies) {
