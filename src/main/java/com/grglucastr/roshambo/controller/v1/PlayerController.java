@@ -1,4 +1,5 @@
 package com.grglucastr.roshambo.controller.v1;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 import com.grglucastr.roshambo.model.Move;
 import com.grglucastr.roshambo.model.Player;
@@ -9,6 +10,7 @@ import com.grglucastr.roshambo.repository.v1.PlayerRepository;
 import com.grglucastr.roshambo.repository.v1.RoshamboSessionRepository;
 import com.grglucastr.roshambo.repository.v1.StrategyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -33,8 +35,16 @@ public class PlayerController extends BaseController{
     public ResponseEntity<Set<Player>>listAllPlayers(@PathVariable("sessionId") Integer sessionId){
 
         Optional<RoshamboSession> optSession = getSession(sessionId);
-        return optSession.map(session -> ResponseEntity.ok(session.getPlayers()))
-                .orElse(ResponseEntity.notFound().build());
+
+        if(optSession.isEmpty()){
+            return ResponseEntity.notFound().build();
+        }
+
+        optSession.get().getPlayers().forEach(player -> {
+            addLinkToMoves(sessionId, player);
+        });
+
+        return ResponseEntity.ok(optSession.get().getPlayers());
     }
 
     @GetMapping(value = "/{playerId}",  produces = MediaType.APPLICATION_JSON_VALUE)
@@ -47,7 +57,13 @@ public class PlayerController extends BaseController{
 
         playerRepository = new PlayerRepository(optSession.get().getPlayers());
         Optional<Player> optPlayer = playerRepository.findById(playerId);
-        return optPlayer.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+
+        if(optPlayer.isEmpty()){
+            return ResponseEntity.notFound().build();
+        }
+
+        addLinkToMoves(sessionId, optPlayer.get());
+        return ResponseEntity.ok(optPlayer.get());
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -191,5 +207,15 @@ public class PlayerController extends BaseController{
         moveRepository = new MoveRepository(session.getMoves());
         moveRepository.removeByPlayerId(player.getId());
         session.getMoves().addAll(moveRepository.listAll());
+    }
+
+    private void addLinkToMoves(Integer sessionId, Player player) {
+        Link link = linkTo(methodOn(PlayerController.class)
+                .listAllPlayerMOve(sessionId, player.getId()))
+                .withRel("moves");
+
+        if(!player.hasLink("moves")){
+            player.add(link);
+        }
     }
 }

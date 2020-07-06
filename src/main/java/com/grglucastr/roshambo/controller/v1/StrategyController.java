@@ -1,17 +1,19 @@
 package com.grglucastr.roshambo.controller.v1;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
+
 import com.grglucastr.roshambo.model.RoshamboSession;
 import com.grglucastr.roshambo.model.Strategy;
 import com.grglucastr.roshambo.repository.v1.RoshamboSessionRepository;
 import com.grglucastr.roshambo.repository.v1.StrategyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -28,12 +30,17 @@ public class StrategyController extends BaseController  {
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Set<Strategy>> listAll(@PathVariable("sessionId") Integer sessionId) {
         Optional<RoshamboSession> optSession = getSession(sessionId);
+        if(optSession.isEmpty()){
+            return ResponseEntity.notFound().build();
+        }
 
-        return optSession.map(session -> ResponseEntity.ok(session.getStrategies()))
-                .orElse(ResponseEntity.notFound().build());
+        optSession.get().getStrategies().forEach(strategy -> {
+            addLinksToStrengthsWeaknesses(sessionId, strategy);
+        });
+
+        return ResponseEntity.ok(optSession.get().getStrategies());
     }
 
-    
     @GetMapping(value = "/{strategyId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Strategy> getSingleOne(@PathVariable("sessionId") Integer sessionId,
                                                  @PathVariable("strategyId") Integer strategyId) {
@@ -45,6 +52,8 @@ public class StrategyController extends BaseController  {
 
         strategyRepository = new StrategyRepository(optSession.get().getStrategies());
         Optional<Strategy> optStrategy = strategyRepository.findById(strategyId);
+
+        addLinksToStrengthsWeaknesses(sessionId, optStrategy.get());
 
         return optStrategy.map(p -> ResponseEntity.ok(p))
                 .orElse(ResponseEntity.notFound().build());
@@ -273,5 +282,25 @@ public class StrategyController extends BaseController  {
                 destinationStrategies.add(strategy);
             }
         });
+    }
+
+    private void addLinksToStrengthsWeaknesses(Integer sessionId, Strategy strategy) {
+        Link link = linkTo(methodOn(StrategyController.class)
+                .listStrengths(sessionId, strategy.getId()))
+                .withRel("strengths");
+
+        if(!strategy.hasLink("strengths")){
+            strategy.add(link);
+        }
+
+
+        link = linkTo(methodOn(StrategyController.class)
+                .listWeaknesses(sessionId, strategy.getId()))
+                .withRel("weaknesses");
+
+        if(!strategy.hasLink("weaknesses")){
+            strategy.add(link);
+        }
+
     }
 }

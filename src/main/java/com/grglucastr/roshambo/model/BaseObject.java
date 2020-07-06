@@ -1,9 +1,11 @@
 package com.grglucastr.roshambo.model;
 
+import org.springframework.hateoas.RepresentationModel;
+
 import java.io.Serializable;
 import java.util.Objects;
 
-public abstract class BaseObject implements Serializable {
+public abstract class BaseObject extends RepresentationModel<BaseObject> implements Serializable {
     private Integer id;
 
     public BaseObject(Integer id) {
