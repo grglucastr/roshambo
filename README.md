@@ -37,9 +37,13 @@ do arquivo **Class_Diagram.mdj** que se encontra no diretório raiz do projeto c
 
 1. É necessário criar, primeiramente, uma sessão onde serão adicionados os jogadores, jogadas e estratégias.
 2. Quando uma sessão é criada, o sistema automaticamente adiciona as estratégias para aquela determinada sessão.
-3. Deve-se ter, obrigatóriamente, 2 jogadores
-4. Para cada jogador, deve ser cadastrada uma jogada (aqui neste projeto chamada de: Move)
+3. Deve-se ter, obrigatóriamente,  no mínimo 2 jogadores
+4. Para cada jogador, deve ser cadastrada uma jogada (aqui neste projeto se chama: Move)
 5. Tendo preenchido esses pré-requisitos, será então possível, iniciar o jogo.
+   ```
+   GET /roshambo-sessions/:sessionId/start 
+   ```
+   onde _:sessionId_ é o identificador único da sessão.
 
 ## Endpoints
 Após executar o comando para subir o servidor Tomcat, você poderá utilizar  dos 30 endpoints desenvolvidos para o
